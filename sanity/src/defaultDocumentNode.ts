@@ -1,10 +1,12 @@
 import { DefaultDocumentNodeResolver } from "sanity/desk";
 import Iframe from "sanity-plugin-iframe-pane";
+import os from "os";
 
 export const defaultDocumentNode: DefaultDocumentNodeResolver = (
   S,
-  { schemaType }
+  { schemaType, currentUser }
 ) => {
+  const hostname = os.hostname();
   switch (schemaType) {
     case `article`:
       return S.document().views([
@@ -12,7 +14,10 @@ export const defaultDocumentNode: DefaultDocumentNodeResolver = (
         S.view
           .component(Iframe)
           .options({
-            url: `http://localhost:3000/api/preview`,
+            url:
+              hostname === "localhost"
+                ? `http://localhost:3000/api/preview`
+                : `https://${hostname}/api/preview`,
           })
           .title("Preview"),
       ]);
